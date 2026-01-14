@@ -226,7 +226,3 @@ Thumbs.db
 *.swp
 *.swo
 *~
-
-# Uploads directory
-backend/uploads/*
-!backend/uploads/.gitkeep
