@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 from datetime import datetime
 from app.services.transcription import transcribe_audio
+from app.services.email_generator import generate_follow_up_email
 
 router = APIRouter(prefix="/api/calls", tags=["calls"])
 
@@ -16,7 +17,7 @@ ALLOWED_EXTENSIONS = {".mp4", ".mov", ".avi", ".webm", ".mkv"}
 
 @router.post("/upload")
 async def upload_video(file: UploadFile = File(...)):
-    """Upload a video file and transcribe it"""
+    """Upload a video file, transcribe it, and generate a follow-up email"""
 
     # Validate file extension
     file_ext = Path(file.filename).suffix.lower()
@@ -49,8 +50,25 @@ async def upload_video(file: UploadFile = File(...)):
             "transcription_error": transcription_result.get("error"),
         }
 
+    # Generate follow-up email from transcript
+    email_result = await generate_follow_up_email(transcription_result["text"])
+
+    if email_result["status"] == "error":
+        return {
+            "message": "File uploaded and transcribed, but email generation failed",
+            "filename": filename,
+            "original_filename": file.filename,
+            "file_size": file_path.stat().st_size,
+            "transcription": {
+                "text": transcription_result["text"],
+                "duration": transcription_result["duration"],
+                "word_count": transcription_result["word_count"],
+            },
+            "email_error": email_result.get("error"),
+        }
+
     return {
-        "message": "File uploaded and transcribed successfully",
+        "message": "File uploaded, transcribed, and email generated successfully",
         "filename": filename,
         "original_filename": file.filename,
         "file_size": file_path.stat().st_size,
@@ -59,4 +77,5 @@ async def upload_video(file: UploadFile = File(...)):
             "duration": transcription_result["duration"],
             "word_count": transcription_result["word_count"],
         },
+        "email": email_result["email"],
     }
