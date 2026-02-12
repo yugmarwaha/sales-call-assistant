@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from pathlib import Path
 import shutil
 from datetime import datetime
@@ -16,7 +16,11 @@ ALLOWED_EXTENSIONS = {".mp4", ".mov", ".avi", ".webm", ".mkv"}
 
 
 @router.post("/upload")
-async def upload_video(file: UploadFile = File(...)):
+async def upload_video(
+    file: UploadFile = File(...),
+    salesperson_name: str = Form("Sales Representative"),
+    prospect_name: str = Form("Valued Customer"),
+):
     """Upload a video file, transcribe it, and generate a follow-up email"""
 
     # Validate file extension
@@ -51,7 +55,9 @@ async def upload_video(file: UploadFile = File(...)):
         }
 
     # Generate follow-up email from transcript
-    email_result = await generate_follow_up_email(transcription_result["text"])
+    email_result = await generate_follow_up_email(
+        transcription_result["text"], salesperson_name, prospect_name
+    )
 
     if email_result["status"] == "error":
         return {
