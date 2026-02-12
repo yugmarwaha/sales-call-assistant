@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pathlib import Path
 import shutil
 from datetime import datetime
+from app.services.transcription import transcribe_audio
 
 router = APIRouter(prefix="/api/calls", tags=["calls"])
 
@@ -15,7 +16,7 @@ ALLOWED_EXTENSIONS = {".mp4", ".mov", ".avi", ".webm", ".mkv"}
 
 @router.post("/upload")
 async def upload_video(file: UploadFile = File(...)):
-    """Upload a video file for transcription"""
+    """Upload a video file and transcribe it"""
 
     # Validate file extension
     file_ext = Path(file.filename).suffix.lower()
@@ -37,10 +38,25 @@ async def upload_video(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
 
+    # Transcribe the uploaded file
+    transcription_result = await transcribe_audio(str(file_path))
+
+    if transcription_result["status"] == "error":
+        return {
+            "message": "File uploaded but transcription failed",
+            "filename": filename,
+            "file_size": file_path.stat().st_size,
+            "transcription_error": transcription_result.get("error"),
+        }
+
     return {
-        "message": "File uploaded successfully",
+        "message": "File uploaded and transcribed successfully",
         "filename": filename,
         "original_filename": file.filename,
         "file_size": file_path.stat().st_size,
-        "file_path": str(file_path),
+        "transcription": {
+            "text": transcription_result["text"],
+            "duration": transcription_result["duration"],
+            "word_count": transcription_result["word_count"],
+        },
     }
