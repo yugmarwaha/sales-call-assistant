@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from pathlib import Path
 import shutil
+import os
 from datetime import datetime
 from app.services.transcription import transcribe_audio
 from app.services.email_generator import generate_follow_up_email
@@ -43,14 +44,19 @@ async def upload_video(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
 
+    file_size = file_path.stat().st_size
+
     # Transcribe the uploaded file
-    transcription_result = await transcribe_audio(str(file_path))
+    try:
+        transcription_result = await transcribe_audio(str(file_path))
+    finally:
+        os.remove(file_path)
 
     if transcription_result["status"] == "error":
         return {
             "message": "File uploaded but transcription failed",
             "filename": filename,
-            "file_size": file_path.stat().st_size,
+            "file_size": file_size,
             "transcription_error": transcription_result.get("error"),
         }
 
@@ -64,7 +70,7 @@ async def upload_video(
             "message": "File uploaded and transcribed, but email generation failed",
             "filename": filename,
             "original_filename": file.filename,
-            "file_size": file_path.stat().st_size,
+            "file_size": file_size,
             "transcription": {
                 "text": transcription_result["text"],
                 "duration": transcription_result["duration"],
@@ -77,7 +83,7 @@ async def upload_video(
         "message": "File uploaded, transcribed, and email generated successfully",
         "filename": filename,
         "original_filename": file.filename,
-        "file_size": file_path.stat().st_size,
+        "file_size": file_size,
         "transcription": {
             "text": transcription_result["text"],
             "duration": transcription_result["duration"],
