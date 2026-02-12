@@ -1,42 +1,317 @@
-#root {
-  max-width: 1280px;
+/* ============================================
+   App Component Styles — Sales Call Assistant
+   ============================================ */
+
+.App {
+  max-width: 640px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3.5rem 1.5rem 4rem;
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ---- Header — pinned to top ---- */
+
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    var(--color-primary-light) 50%,
+    var(--color-accent) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: headingFadeIn 0.8s ease-out;
 }
 
-@keyframes logo-spin {
+.subtitle {
+  color: var(--color-text-dim);
+  font-size: 1.05rem;
+  font-weight: 400;
+  margin-bottom: 3.5rem;
+  animation: subtitleFadeIn 0.8s ease-out 0.15s both;
+}
+
+@keyframes headingFadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(-12px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.card {
-  padding: 2em;
+/* ---- Upload Card ---- */
+
+.upload-container {
+  width: 100%;
+  background: var(--color-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  animation: cardSlideUp 0.6s ease-out 0.3s both;
 }
 
-.read-the-docs {
-  color: #888;
+.upload-container:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg), 0 0 100px rgba(99, 102, 241, 0.12);
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- File Drop Zone ---- */
+
+.file-input-wrapper {
+  margin-bottom: 1.75rem;
+}
+
+#file-input {
+  display: none;
+}
+
+.file-input-label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 2.5rem 1.5rem;
+  background: transparent;
+  border: 2px dashed var(--color-border-hover);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 1rem;
+  overflow: hidden;
+}
+
+.file-input-label::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.06), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: inherit;
+}
+
+.file-input-label:hover {
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-light);
+  transform: scale(1.005);
+}
+
+.file-input-label:hover::before {
+  opacity: 1;
+}
+
+.file-input-label:active {
+  transform: scale(0.995);
+}
+
+/* ---- Selected File Info ---- */
+
+.selected-file {
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.75rem;
+  text-align: left;
+  animation: fadeSlideIn 0.25s ease;
+}
+
+.selected-file p {
+  margin: 0.2rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.selected-file p strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ---- Upload Button — large and centered ---- */
+
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 1.125rem 2.5rem;
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.upload-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+.upload-button:hover:not(:disabled)::after {
+  opacity: 1;
+}
+
+.upload-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
+}
+
+.upload-button:disabled {
+  background: var(--color-surface-hover);
+  color: var(--color-text-dim);
+  cursor: not-allowed;
+  border: 1px solid var(--color-border);
+}
+
+/* ---- Spinner ---- */
+
+.spinner {
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Result Messages ---- */
+
+.result {
+  margin-top: 1.75rem;
+  padding: 1.125rem 1.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  animation: fadeSlideIn 0.3s ease;
+}
+
+.result.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+.result.error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-border);
+}
+
+.result p {
+  margin: 0.2rem 0;
+}
+
+.result strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .App {
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    margin-bottom: 2.5rem;
+  }
+
+  .upload-container {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .file-input-label {
+    padding: 2rem 1rem;
+  }
+
+  .upload-button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
 }

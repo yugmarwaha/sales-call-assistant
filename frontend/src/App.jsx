@@ -1,35 +1,125 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import axios from "axios";
+import { Upload, CheckCircle, XCircle, Loader } from "lucide-react";
+import "./App.css";
+
+const API_URL = "http://localhost:8000";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    setUploadResult(null);
+    setError(null);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      setError("Please select a file first");
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+    setUploadResult(null);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/calls/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      setUploadResult(response.data);
+      setSelectedFile(null);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="App">
+      <h1>Sales Call Assistant</h1>
+      <p className="subtitle">Upload your sales call recording</p>
+
+      <div className="upload-container">
+        <div className="file-input-wrapper">
+          <input
+            type="file"
+            id="file-input"
+            accept="video/*"
+            onChange={handleFileSelect}
+            disabled={uploading}
+          />
+          <label htmlFor="file-input" className="file-input-label">
+            <Upload size={20} />
+            Choose Video File
+          </label>
+        </div>
+
+        {selectedFile && (
+          <div className="selected-file">
+            <p>
+              Selected: <strong>{selectedFile.name}</strong>
+            </p>
+            <p>Size: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+          </div>
+        )}
+
+        <button
+          onClick={handleUpload}
+          disabled={!selectedFile || uploading}
+          className="upload-button"
+        >
+          {uploading ? (
+            <>
+              <Loader className="spinner" size={20} />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Upload size={20} />
+              Upload
+            </>
+          )}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+        {uploadResult && (
+          <div className="result success">
+            <CheckCircle size={20} />
+            <div>
+              <strong>Upload successful!</strong>
+              <p>File: {uploadResult.original_filename}</p>
+              <p>
+                Size: {(uploadResult.file_size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="result error">
+            <XCircle size={20} />
+            <p>{error}</p>
+          </div>
+        )}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
