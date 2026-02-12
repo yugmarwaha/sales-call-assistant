@@ -88,7 +88,7 @@ function App() {
           {uploading ? (
             <>
               <Loader className="spinner" size={20} />
-              Uploading...
+              Processing...
             </>
           ) : (
             <>
@@ -102,12 +102,39 @@ function App() {
           <div className="result success">
             <CheckCircle size={20} />
             <div>
-              <strong>Upload successful!</strong>
+              <strong>{uploadResult.message}</strong>
               <p>File: {uploadResult.original_filename}</p>
-              <p>
-                Size: {(uploadResult.file_size / 1024 / 1024).toFixed(2)} MB
-              </p>
+              <p>Size: {(uploadResult.file_size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
+          </div>
+        )}
+
+        {uploadResult?.transcription && (
+          <div className="result-section">
+            <h2>Transcript</h2>
+            <div className="result-card">
+              <p>{uploadResult.transcription.text}</p>
+              <div className="result-meta">
+                <span>Duration: {uploadResult.transcription.duration}s</span>
+                <span>Words: {uploadResult.transcription.word_count}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {uploadResult?.email && (
+          <div className="result-section">
+            <h2>Follow-up Email</h2>
+            <div className="result-card">
+              <pre className="email-content">{uploadResult.email}</pre>
+            </div>
+          </div>
+        )}
+
+        {uploadResult?.email_error && (
+          <div className="result error">
+            <XCircle size={20} />
+            <p>Email generation failed: {uploadResult.email_error}</p>
           </div>
         )}
 
