@@ -11,16 +11,16 @@
 }
 
 :root {
-  /* Brand palette */
-  --color-primary: #6366f1;
-  --color-primary-light: #818cf8;
-  --color-primary-dark: #4f46e5;
-  --color-accent: #06b6d4;
+  /* Brand palette — amber/gold */
+  --color-primary: #f59e0b;
+  --color-primary-light: #fbbf24;
+  --color-primary-dark: #d97706;
+  --color-accent: #fde68a;
 
-  /* Neutrals — true black base */
-  --color-bg-start: #000000;
-  --color-bg-mid: #0a0a0a;
-  --color-bg-end: #111111;
+  /* Neutrals — dark warm gray */
+  --color-bg-start: #0c0a09;
+  --color-bg-mid: #1a1714;
+  --color-bg-end: #211e19;
   --color-surface: rgba(255, 255, 255, 0.04);
   --color-surface-hover: rgba(255, 255, 255, 0.08);
   --color-border: rgba(255, 255, 255, 0.08);
@@ -46,7 +46,7 @@
 
   /* Shadows */
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 80px rgba(99, 102, 241, 0.1);
+  --shadow-glow: 0 0 80px rgba(251, 191, 36, 0.06);
 }
 
 html {
@@ -77,9 +77,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle 600px at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%),
-    radial-gradient(circle 400px at 85% 60%, rgba(6, 182, 212, 0.06) 0%, transparent 60%),
-    radial-gradient(circle 400px at 15% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+    radial-gradient(circle 600px at 50% 0%, rgba(251, 191, 36, 0.08) 0%, transparent 70%),
+    radial-gradient(circle 400px at 85% 60%, rgba(245, 158, 11, 0.04) 0%, transparent 60%),
+    radial-gradient(circle 400px at 15% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
 }
@@ -92,7 +92,7 @@ body::before {
 
 /* Selection */
 ::selection {
-  background: rgba(99, 102, 241, 0.4);
+  background: rgba(251, 191, 36, 0.3);
   color: #fff;
 }
 
